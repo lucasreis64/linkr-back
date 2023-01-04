@@ -3,14 +3,14 @@ import bcrypt from "bcrypt";
 import { v4 as uuidV4 } from "uuid";
 
 export async function signUp(req, res) {
-    const { name, email, password } = req.body;
+    const { username, email, password, profile_picture } = req.body;
 
     try {
         const passwordHash = bcrypt.hashSync(password, 10);
 
         await connection.query(
-            "INSERT INTO users (name, email, password) VALUES ($1, $2, $3)",
-            [name, email, passwordHash]
+            "INSERT INTO users (username, email, password, profile_picture) VALUES ($1, $2, $3, $4)",
+            [username, email, passwordHash, profile_picture]
         );
 
         res.sendStatus(201);
@@ -28,7 +28,7 @@ export async function signIn(req, res) {
     try {
         if (user && bcrypt.compareSync(user.password, password)) {
             await connection.query(
-                "INSERT INTO sessions (\"userId\", token) VALUES ($1, $2)",
+                "INSERT INTO sessions (user_id, token) VALUES ($1, $2)",
                 [id, token]
             );
             res.send({ token });
