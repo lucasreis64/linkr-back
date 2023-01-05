@@ -1,4 +1,4 @@
-import { connection } from "../db/database.js";
+import connection from "../db/database.js";
 
 export async function publishPost(req, res){
     const post = req.body

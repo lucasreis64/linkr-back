@@ -1,5 +1,5 @@
 import { signInSchema } from "../models/signInSchema.js";
-import { connection } from "../db/database.js";
+import connection from "../db/database.js";
 import { validateBySchema } from "../services/validateBySchema.js";
 
 export async function validateSignIn(req, res, next) {
