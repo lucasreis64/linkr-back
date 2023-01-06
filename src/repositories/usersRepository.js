@@ -1,6 +1,6 @@
-import connection from "../db/database";
+import connection from "../db/database.js";
 
-export function searchUser(name) {
+export async function searchUser(name) {
     const users = await connection.query(`SELECT id,username, profile_picture
                                           FROM USERS WHERE
                                           username ILIKE $1`, ['%' + name + '%'])

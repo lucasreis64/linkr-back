@@ -1,4 +1,4 @@
-import { searchUser } from "../repositories/usersRepository";
+import { searchUser } from "../repositories/usersRepository.js";
 
 export function searchUsers(req, res) {
     

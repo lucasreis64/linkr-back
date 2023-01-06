@@ -15,6 +15,6 @@ app.use(authRouter);
 app.use(postsRouter);
 app.use(usersRouter)
 
-app.listen(process.env.PORT, ()=>{
+app.listen(process.env.PORT || 5000, ()=>{
     console.log("Running on port " + process.env.PORT)
 })
