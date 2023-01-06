@@ -1,8 +1,8 @@
 import { connection } from "../db/database.js";
 
-export async function validateToken(req, res, next) {
+export default async function validateToken(req, res, next) {
     const { authorization } = req.headers;
-    const token = authorization?.replace("Bearer ", "");
+    const token = authorization?.replace('Bearer ', '');
 
     if (!token) {
         return res.status(401).send("missing token");
@@ -23,7 +23,7 @@ export async function validateToken(req, res, next) {
         
         let user = await connection.query(
             "SELECT * FROM users WHERE id = $1;",
-            [session.userId]
+            [session.user_id]
         )
 
         user = user?.rows[0];
