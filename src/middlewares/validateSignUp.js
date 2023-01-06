@@ -1,4 +1,4 @@
-import { connection } from "../db/database.js";
+import connection from "../db/database.js";
 import { signUpSchema } from "../models/signUpSchema.js";
 import { validateBySchema } from "../services/validateBySchema.js";
 

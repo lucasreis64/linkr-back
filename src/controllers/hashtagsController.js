@@ -1,4 +1,4 @@
-import { connection } from "../db/database.js";
+import connection from "../db/database.js";
 
 export async function rankTrendings(req, res){
     try {
