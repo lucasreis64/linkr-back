@@ -4,11 +4,14 @@ export async function publishPost(req, res){
     const {token, link, description} = req.body
 
     try {
-        const result = await connection.query(`
+        const userExist = await connection.query(`
 
-            SELECT user_id FROM sessions WHERE token = $1`,[token]); 
-        
-        const userData = result.rows[0]
+            SELECT user_id FROM sessions WHERE token = $1`,[token]);
+
+        if(userExist.rowCount == 0) {
+            return res.status(401).send("Algo deu errado, tente novamente!")
+        }
+        const userData = userExist.rows[0]
 
         await connection.query(`
             INSERT INTO posts (user_id, link, description) 
