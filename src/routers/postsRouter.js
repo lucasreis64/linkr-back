@@ -1,9 +1,10 @@
 import express from 'express';
-import { publishPost, getPosts } from '../controllers/postsController.js';
+import { validateToken } from '../middlewares/validateToken.js';
+import { publishPost, getTimeline } from '../controllers/postsController.js';
 
 const router = express.Router();
 
 router.post("/timeline", publishPost);
-router.get("/timeline", getPosts);
+router.get("/timeline", validateToken, getTimeline);
 
 export default router;
