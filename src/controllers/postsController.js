@@ -1,13 +1,19 @@
 import { connection } from "../db/database.js";
 
-export async function publishPost(req, res) {
-    const post = req.body
+export async function publishPost(req, res){
+    const {token, link, description} = req.body
 
     try {
         const result = await connection.query(`
-            INSERT INTO posts (link, description, user_id) 
+
+            SELECT user_id FROM sessions WHERE token = $1`,[token]); 
+        
+        const userData = result.rows[0]
+
+        await connection.query(`
+            INSERT INTO posts (user_id, link, description) 
             VALUES ($1, $2, $3)`,
-            [post.url, post.text, post.userId]);
+            [userData.user_id, link, description]);
 
         res.sendStatus(201)
     } catch (err) {
@@ -17,6 +23,7 @@ export async function publishPost(req, res) {
 }
 
 export async function getTimeline(req, res) {
+    const user = res.locals.user;
 
     try {
         const { rows: foundPosts } = await connection.query(`
@@ -64,11 +71,13 @@ export async function getTimeline(req, res) {
 
 
             if(foundLikes?.length > 0){
-                foundPosts[i].likes_users = foundLikeUsers;
+                foundPosts[i].likes_users = foundLikeUsers.map(i => i.username);
             } 
+
         }
 
-        res.status(200).send(foundPosts);
+
+        res.status(200).send({data: foundPosts, loggedUser: user});
     } catch (err) {
         console.log(err);
         return res.sendStatus(500);
