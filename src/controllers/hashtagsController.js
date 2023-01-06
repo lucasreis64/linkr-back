@@ -11,3 +11,21 @@ export async function rankTrendings(req, res){
         return res.sendStatus(500);
     }
 }
+
+export async function getByHashtag(req, res){
+    const hashtag = req.params.hashtag
+    
+    try {
+        const result = await connection.query(`
+        SELECT * FROM posts_hashtags AS ph
+        WHERE ph.hashtag LIKE $1
+        JOIN posts AS p
+        ON ph.post_id = p.id`,
+        [hashtag]);
+
+        return res.status(200).send(result.rows);
+    } catch (err){
+        console.log(err);
+        return res.sendStatus(500);
+    }
+}
