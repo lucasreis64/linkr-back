@@ -1,13 +1,15 @@
 import express from 'express';
+import  validateToken  from '../middlewares/validateToken.js';
+import { publishPost, getTimeline } from '../controllers/postsController.js';
 import { publishPost, deletePost, updatePost } from '../controllers/postsController.js';
-import auth from '../middlewares/validateToken.js';
 import deleteMiddleware from '../middlewares/deleteMiddleware.js';
 import updateMiddleware from '../middlewares/updateMiddleware.js';
 
 const router = express.Router();
 
 router.post("/timeline", publishPost);
-router.delete("/delete/:id", auth, deleteMiddleware, deletePost);
-router.put("/update/:id", auth, updateMiddleware, updatePost);
+router.get("/timeline", validateToken, getTimeline);
+router.delete("/delete/:id", validateToken, deleteMiddleware, deletePost);
+router.put("/update/:id", validateToken, updateMiddleware, updatePost);
 
 export default router;

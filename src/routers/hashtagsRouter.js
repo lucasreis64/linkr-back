@@ -1,8 +1,9 @@
 import express from 'express';
-import { rankTrendings } from '../controllers/hashtagsController.js';
+import { rankTrendings, getByHashtag } from '../controllers/hashtagsController.js';
 
 const router = express.Router();
 
 router.get("/trendings", rankTrendings);
+router.get("/hashtag/:hashtag", getByHashtag);
 
 export default router;

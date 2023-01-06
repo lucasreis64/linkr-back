@@ -1,4 +1,4 @@
-import { connection } from "../db/database.js";
+import connection from "../db/database.js";
 import bcrypt from "bcrypt";
 import { v4 as uuidV4 } from "uuid";
 
