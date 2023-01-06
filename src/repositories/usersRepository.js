@@ -17,7 +17,10 @@ export async function queryUserData(user) {
                                             'id', p.id,
                                             'link', p.link,
                                             'description', p.description,
-                                            'created_at', p.created_at
+                                            'created_at', p.created_at,
+                                            'likes', (SELECT 
+                                                      ARRAY_AGG(l.user_id) FROM likes l
+                                                      WHERE l.post_id=p.id)
                                           ) ORDER BY p.created_at DESC) AS user_posts 
                                           FROM users u LEFT JOIN posts p 
                                           ON p.user_id=$1
