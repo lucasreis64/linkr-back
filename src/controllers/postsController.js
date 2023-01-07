@@ -1,4 +1,7 @@
 import connection from "../db/database.js";
+import postRepository from "../repositories/postRepository.js";
+import hashtagRepository from "../repositories/hashtagRepository.js";
+import extract from "mention-hashtag";
 
 export async function publishPost(req, res){
     const {token, link, description} = req.body
@@ -86,3 +89,64 @@ export async function getTimeline(req, res) {
         return res.sendStatus(500);
     }
 }
+
+export async function updatePost(req, res) {
+    try {
+        
+        
+        const { link, description } = req.body;
+        const id = req.params.id;
+        const hashtags = extract(description, { symbol: false, unique: true, type: '#' });
+
+        await hashtagRepository.lessHashtag(id);
+        await hashtagRepository.deletePostHashtag(id);
+        
+        if(!hashtags)
+        {
+            await postRepository.updatePost(link, description, id);
+        }
+        else
+        {
+            for(let i = 0; i < hashtags.length; i++)
+            {
+                const hashtag = await hashtagRepository.getHashtag(hashtags[i]);
+
+                if(hashtag.rows[0])
+                {
+                    await hashtagRepository.plusHashtag(hashtags[i]);
+                }
+                else
+                {
+                    await hashtagRepository.putHashtag(hashtags[i]);
+
+                }
+                await hashtagRepository.putPostHashtag(hashtags[i], id);
+            }
+        }
+            
+          
+        return res.status(204).send('update com sucesso');
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send('Não foi possível conectar ao servidor!');
+    }  
+};
+
+export async function deletePost(req, res) {
+    try {
+        
+        const id = req.params.id;
+
+        await hashtagRepository.lessHashtag(id);
+        await hashtagRepository.deletePostHashtag(id);
+        await postRepository.deletePost(id);
+          
+        return res.status(204).send('Deletado com sucesso');
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send('Não foi possível conectar ao servidor!');
+
+    }  
+};
