@@ -1,4 +1,7 @@
 import connection from "../db/database.js";
+import postRepository from "../repositories/postRepository.js";
+import hashtagRepository from "../repositories/hashtagRepository.js";
+import extract from "mention-hashtag";
 
 export async function publishPost(req, res){
     const {token, link, description} = req.body
@@ -90,13 +93,37 @@ export async function getTimeline(req, res) {
 export async function updatePost(req, res) {
     try {
         
-        const { link, description} = req.body
+        
+        const { link, description } = req.body;
         const id = req.params.id;
+        const hashtags = extract(description, { symbol: false, unique: true, type: '#' });
 
-        await connection.query(
-            `UPDATE posts SET link = $1, description = $2 WHERE id = $3`,
-            [link, description, id]
-        );
+        await hashtagRepository.lessHashtag(id);
+        await hashtagRepository.deletePostHashtag(id);
+        
+        if(!hashtags)
+        {
+            await postRepository.updatePost(link, description, id);
+        }
+        else
+        {
+            for(let i = 0; i < hashtags.length; i++)
+            {
+                const hashtag = await hashtagRepository.getHashtag(hashtags[i]);
+
+                if(hashtag.rows[0])
+                {
+                    await hashtagRepository.plusHashtag(hashtags[i]);
+                }
+                else
+                {
+                    await hashtagRepository.putHashtag(hashtags[i]);
+
+                }
+                await hashtagRepository.putPostHashtag(hashtags[i], id);
+            }
+        }
+            
           
         return res.status(204).send('update com sucesso');
 
@@ -111,10 +138,9 @@ export async function deletePost(req, res) {
         
         const id = req.params.id;
 
-        await connection.query(
-            `DELETE FROM posts WHERE id=$1`,
-            [id]
-        );
+        await hashtagRepository.lessHashtag(id);
+        await hashtagRepository.deletePostHashtag(id);
+        await postRepository.deletePost(id);
           
         return res.status(204).send('Deletado com sucesso');
 

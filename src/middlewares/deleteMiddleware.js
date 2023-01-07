@@ -1,4 +1,4 @@
-import { connection } from "../db/database.js";
+import  connection  from "../db/database.js";
 
 export default async function deleteMiddleware(req, res, next) 
 {

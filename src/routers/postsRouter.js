@@ -1,7 +1,6 @@
 import express from 'express';
 import  validateToken  from '../middlewares/validateToken.js';
-import { publishPost, getTimeline } from '../controllers/postsController.js';
-import { publishPost, deletePost, updatePost } from '../controllers/postsController.js';
+import { publishPost, deletePost, updatePost, getTimeline } from '../controllers/postsController.js';
 import deleteMiddleware from '../middlewares/deleteMiddleware.js';
 import updateMiddleware from '../middlewares/updateMiddleware.js';
 
