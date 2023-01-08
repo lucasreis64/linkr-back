@@ -1,8 +1,8 @@
-import { connection } from "../db/database.js";
+import connection from "../db/database.js";
 
-export async function validateToken(req, res, next) {
+export default async function validateToken(req, res, next) {
     const { authorization } = req.headers;
-    const token = authorization?.replace("Bearer ", "");
+    const token = authorization?.replace('Bearer ', '');
 
     console.log(authorization)
     if (!token) {
