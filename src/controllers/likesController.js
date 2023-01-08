@@ -1,4 +1,4 @@
-import { connection } from "../db/database.js";
+import connection from "../db/database.js";
 
 export async function postLike(req, res){
     const {post_id} = req.body;
