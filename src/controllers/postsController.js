@@ -1,4 +1,5 @@
 import { connection } from "../db/database.js";
+import { metadata } from "../services/getMetadataByLink.js";
 
 export async function publishPost(req, res){
     const {token, link, description} = req.body
@@ -72,10 +73,17 @@ export async function getTimeline(req, res) {
                         ON l.post_id = p.id
                 WHERE p.id = $1`, [foundPosts[i].id]);
 
+            foundPosts[i].likes_users = [];
 
-            if(foundLikes?.length > 0){
+            console.log(foundLikeUsers)
+
+            if(foundLikeUsers?.length > 0){  
                 foundPosts[i].likes_users = foundLikeUsers.map(i => i.username);
             } 
+
+            foundPosts[i].link_metadata = await metadata(foundPosts[i].link);
+
+            
 
         }
 
