@@ -9,18 +9,27 @@ export async function publishPost(req, res){
 
     try {
         const userExist = await connection.query(`
-
             SELECT user_id FROM sessions WHERE token = $1`,[token]);
 
-        if(userExist.rowCount == 0) {
-            return res.status(401).send("Algo deu errado, tente novamente!")
-        }
-        const userData = userExist.rows[0]
-
+        const userData = userExist?.rows[0]
         await connection.query(`
             INSERT INTO posts (user_id, link, description) 
             VALUES ($1, $2, $3)`,
             [userData.user_id, link, description]);
+
+        const hashtags = extract(description, { symbol: false, unique: true, type: '#' });
+        if(hashtags != []){
+            for(let i = 0; i < hashtags.length; i++){
+                const hashtag = await hashtagRepository.getHashtag(hashtags[i]);
+
+                if(hashtag.rows[0]){
+                    await hashtagRepository.plusHashtag(hashtags[i]);
+                } else {
+                    await hashtagRepository.putHashtag(hashtags[i]);
+                }
+                await hashtagRepository.putPostHashtag(hashtags[i], userData.user_id);
+            }
+        }
 
         res.sendStatus(201)
     } catch (err) {
