@@ -122,8 +122,9 @@ export async function updatePost(req, res) {
                 }
                 await hashtagRepository.putPostHashtag(hashtags[i], id);
             }
+            await postRepository.updatePost(link, description, id);
         }
-            
+        
           
         return res.status(204).send('update com sucesso');
 
