@@ -13,14 +13,14 @@ export async function rankTrendings(req, res){
 }
 
 export async function getByHashtag(req, res){
-    const hashtag = req.params.hashtag
+    const { hashtag } = req.params
     
     try {
         const result = await connection.query(`
-            SELECT * FROM posts_hashtags AS ph
-            WHERE ph.hashtag = $1
-            JOIN posts AS p
-            ON ph.post_id = p.id`,
+            SELECT * FROM posts AS p 
+            JOIN posts_hashtags AS ph 
+            ON ph.post_id = p.id 
+            WHERE ph.hashtag = $1`,
             [hashtag]);
 
         return res.status(200).send(result.rows);
