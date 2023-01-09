@@ -40,7 +40,7 @@ export default async function validateToken(req, res, next) {
         delete user.password;
 
         res.locals.user = user;
-
+        
         next();
     } catch (error) {
         console.error(error);
