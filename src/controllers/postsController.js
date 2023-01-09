@@ -142,7 +142,6 @@ export async function updatePost(req, res) {
             await postRepository.updatePost(link, description, id);
         }
         
-          
         return res.status(204).send('update com sucesso');
 
     } catch (error) {
@@ -152,8 +151,7 @@ export async function updatePost(req, res) {
 };
 
 export async function deletePost(req, res) {
-    try {
-        
+    try { 
         const id = req.params.id;
 
         await hashtagRepository.lessHashtag(id);
@@ -161,10 +159,8 @@ export async function deletePost(req, res) {
         await postRepository.deletePost(id);
           
         return res.status(204).send('Deletado com sucesso');
-
     } catch (error) {
         console.log(error);
         return res.status(500).send('Não foi possível conectar ao servidor!');
-
     }  
 };
