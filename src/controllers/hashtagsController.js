@@ -18,7 +18,7 @@ export async function getByHashtag(req, res){
     try {
         const result = await connection.query(`
         SELECT * FROM posts_hashtags AS ph
-        WHERE ph.hashtag LIKE $1
+        WHERE ph.hashtag = $1
         JOIN posts AS p
         ON ph.post_id = p.id`,
         [hashtag]);

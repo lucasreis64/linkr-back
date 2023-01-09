@@ -12,10 +12,12 @@ export async function publishPost(req, res){
             SELECT user_id FROM sessions WHERE token = $1`,[token]);
 
         const userData = userExist?.rows[0]
-        await connection.query(`
+        const result = await connection.query(`
             INSERT INTO posts (user_id, link, description) 
-            VALUES ($1, $2, $3)`,
+            VALUES ($1, $2, $3) RETURNING id`,
             [userData.user_id, link, description]);
+
+        const { id } = result.rows[0]
 
         const hashtags = extract(description, { symbol: false, unique: true, type: '#' });
         if(hashtags != []){
@@ -27,7 +29,7 @@ export async function publishPost(req, res){
                 } else {
                     await hashtagRepository.putHashtag(hashtags[i]);
                 }
-                await hashtagRepository.putPostHashtag(hashtags[i], userData.user_id);
+                await hashtagRepository.putPostHashtag(hashtags[i], id);
             }
         }
 
@@ -108,9 +110,7 @@ export async function getTimeline(req, res) {
 }
 
 export async function updatePost(req, res) {
-    try {
-        
-        
+    try {       
         const { link, description } = req.body;
         const id = req.params.id;
         const hashtags = extract(description, { symbol: false, unique: true, type: '#' });
