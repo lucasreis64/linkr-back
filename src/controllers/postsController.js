@@ -12,10 +12,12 @@ export async function publishPost(req, res){
             SELECT user_id FROM sessions WHERE token = $1`,[token]);
 
         const userData = userExist?.rows[0]
-        await connection.query(`
+        const result = await connection.query(`
             INSERT INTO posts (user_id, link, description) 
-            VALUES ($1, $2, $3)`,
+            VALUES ($1, $2, $3) RETURNING id`,
             [userData.user_id, link, description]);
+
+        const { id } = result.rows[0]
 
         const hashtags = extract(description, { symbol: false, unique: true, type: '#' });
         if(hashtags != []){
@@ -27,7 +29,7 @@ export async function publishPost(req, res){
                 } else {
                     await hashtagRepository.putHashtag(hashtags[i]);
                 }
-                await hashtagRepository.putPostHashtag(hashtags[i], userData.user_id);
+                await hashtagRepository.putPostHashtag(hashtags[i], id);
             }
         }
 
@@ -40,7 +42,6 @@ export async function publishPost(req, res){
 
 export async function getTimeline(req, res) {
     const user = res.locals.user;
-
     try {
         const { rows: foundPosts } = await connection.query(`
            SELECT 
@@ -74,7 +75,7 @@ export async function getTimeline(req, res) {
             if(foundLikes?.length > 0){
                 foundPosts[i].likes_count = likes_count;
             } 
-
+            
             const { rows: foundLikeUsers } = await connection.query(`
                 SELECT DISTINCT
                     u.username
@@ -90,13 +91,22 @@ export async function getTimeline(req, res) {
             if(foundLikeUsers?.length > 0){  
                 foundPosts[i].likes_users = foundLikeUsers.map(i => i.username);
             } 
-
-            foundPosts[i].link_metadata = await metadata(foundPosts[i].link);
-
-            
-
+            try {
+                foundPosts[i].link_metadata = await metadata(foundPosts[i].link);
+            }
+            catch(e){
+                console.log(e)
+                foundPosts[i].link_metadata = {
+                    title: "shared link in linkr",
+                    image : "https://rafaturis.com.br/wp-content/uploads/2014/01/default-placeholder.png",
+                    url: foundPosts[i].link,
+                    description: "check this nice link shared in linkr!",
+                    headline: ""
+                };
+                continue;
+            }
         }
-
+        
 
         res.status(200).send({data: foundPosts, loggedUser: user});
     } catch (err) {
@@ -106,9 +116,7 @@ export async function getTimeline(req, res) {
 }
 
 export async function updatePost(req, res) {
-    try {
-        
-        
+    try {       
         const { link, description } = req.body;
         const id = req.params.id;
         const hashtags = extract(description, { symbol: false, unique: true, type: '#' });

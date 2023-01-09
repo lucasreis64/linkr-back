@@ -18,6 +18,5 @@ async function updatePost(link, description, id) {
 const postRepository = {
 	deletePost,
     updatePost,
-
 }
 export default postRepository;
