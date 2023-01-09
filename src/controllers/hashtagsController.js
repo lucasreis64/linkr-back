@@ -4,7 +4,7 @@ import { metadata } from "../services/getMetadataByLink.js";
 export async function rankTrendings(req, res){
     try {
         const rank = await connection.query(`
-        SELECT * FROM "hashtags" ORDER BY users DESC LIMIT 10;`);
+            SELECT * FROM "hashtags" ORDER BY users DESC LIMIT 10;`);
 
         return res.status(200).send(rank.rows);
     } catch (err){

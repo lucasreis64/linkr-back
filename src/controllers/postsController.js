@@ -1,6 +1,7 @@
 import connection from "../db/database.js";
 import postRepository from "../repositories/postRepository.js";
 import hashtagRepository from "../repositories/hashtagRepository.js";
+import likesRepository from "../repositories/likesRepository.js";
 import extract from "mention-hashtag";
 import { metadata } from "../services/getMetadataByLink.js";
 
@@ -43,32 +44,15 @@ export async function publishPost(req, res){
 export async function getTimeline(req, res) {
     const user = res.locals.user;
     try {
-        const { rows: foundPosts } = await connection.query(`
-           SELECT 
-                p.id,
-                p.link,
-                p.description,
-                p.created_at,
-                p.user_id,
-                u.username,
-                u.profile_picture
-            FROM posts p
-                JOIN users u
-                    ON p.user_id = u.id
-            ORDER BY created_at DESC LIMIT 20`);
+        const { rows: foundPosts } = await postRepository.getPostsTimeline();
 
         if (foundPosts?.length === 0) {
-            return "Não há posts ainda."
+            return res.sendStatus(200);
         }
 
         for(let i = 0; i < foundPosts?.length; i++){
-            const { rows: foundLikes } = await connection.query(`
-                SELECT 
-                    COUNT(l.id) AS "likes_count"
-                FROM posts p
-                    LEFT JOIN likes l
-                        ON l.post_id = p.id
-                WHERE p.id = $1`, [foundPosts[i].id]);
+
+            const { rows: foundLikes } = await likesRepository.getLikesNumberPost(foundPosts[i].id);
             
             const {likes_count} = foundLikes[0];
 
@@ -76,15 +60,7 @@ export async function getTimeline(req, res) {
                 foundPosts[i].likes_count = likes_count;
             } 
             
-            const { rows: foundLikeUsers } = await connection.query(`
-                SELECT DISTINCT
-                    u.username
-                FROM likes l
-                    JOIN users u
-                        ON l.user_id = u.id
-                    JOIN posts p
-                        ON l.post_id = p.id
-                WHERE p.id = $1`, [foundPosts[i].id]);
+            const { rows: foundLikeUsers } = await likesRepository.getLikesUsersPost(foundPosts[i].id);
 
             foundPosts[i].likes_users = [];
 
@@ -148,7 +124,6 @@ export async function updatePost(req, res) {
             await postRepository.updatePost(link, description, id);
         }
         
-          
         return res.status(204).send('update com sucesso');
 
     } catch (error) {
@@ -158,8 +133,7 @@ export async function updatePost(req, res) {
 };
 
 export async function deletePost(req, res) {
-    try {
-        
+    try { 
         const id = req.params.id;
 
         await hashtagRepository.lessHashtag(id);
@@ -167,10 +141,8 @@ export async function deletePost(req, res) {
         await postRepository.deletePost(id);
           
         return res.status(204).send('Deletado com sucesso');
-
     } catch (error) {
         console.log(error);
         return res.status(500).send('Não foi possível conectar ao servidor!');
-
     }  
 };
