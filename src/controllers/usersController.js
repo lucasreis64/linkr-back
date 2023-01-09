@@ -1,4 +1,5 @@
 import { searchUser, queryUserById, queryUserData } from "../repositories/usersRepository.js";
+import { metadata } from "../services/getMetadataByLink.js";
 
 export async function searchUsers(req, res) {
     
@@ -26,6 +27,10 @@ export async function getUserData(req, res) {
             return res.sendStatus(404)
 
         const posts = await queryUserData(id);
+        
+        for(let i = 0; i < posts.user_posts.length; i++) 
+            posts.user_posts[i]["link_metadata"] = await metadata(posts.user_posts[i].link)
+        
         return res.status(200).send(posts);
     }
     catch(e) {

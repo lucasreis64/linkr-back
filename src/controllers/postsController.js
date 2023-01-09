@@ -42,7 +42,6 @@ export async function publishPost(req, res){
 
 export async function getTimeline(req, res) {
     const user = res.locals.user;
-
     try {
         const { rows: foundPosts } = await connection.query(`
            SELECT 
@@ -76,7 +75,7 @@ export async function getTimeline(req, res) {
             if(foundLikes?.length > 0){
                 foundPosts[i].likes_count = likes_count;
             } 
-
+            
             const { rows: foundLikeUsers } = await connection.query(`
                 SELECT DISTINCT
                     u.username
@@ -89,18 +88,25 @@ export async function getTimeline(req, res) {
 
             foundPosts[i].likes_users = [];
 
-            console.log(foundLikeUsers)
-
             if(foundLikeUsers?.length > 0){  
                 foundPosts[i].likes_users = foundLikeUsers.map(i => i.username);
             } 
-
-            foundPosts[i].link_metadata = await metadata(foundPosts[i].link);
-
-            
-
+            try {
+                foundPosts[i].link_metadata = await metadata(foundPosts[i].link);
+            }
+            catch(e){
+                console.log(e)
+                foundPosts[i].link_metadata = {
+                    title: "shared link in linkr",
+                    image : "https://rafaturis.com.br/wp-content/uploads/2014/01/default-placeholder.png",
+                    url: foundPosts[i].link,
+                    description: "check this nice link shared in linkr!",
+                    headline: ""
+                };
+                continue;
+            }
         }
-
+        
 
         res.status(200).send({data: foundPosts, loggedUser: user});
     } catch (err) {

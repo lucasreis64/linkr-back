@@ -18,9 +18,9 @@ export async function queryUserData(user) {
                                             'link', p.link,
                                             'description', p.description,
                                             'created_at', p.created_at,
-                                            'likes', (SELECT 
+                                            'likes_users', COALESCE((SELECT 
                                                       ARRAY_AGG(l.user_id) FROM likes l
-                                                      WHERE l.post_id=p.id)
+                                                      WHERE l.post_id=p.id), ARRAY[]::integer[])
                                           ) ORDER BY p.created_at DESC) AS user_posts 
                                           FROM users u LEFT JOIN posts p 
                                           ON p.user_id=$1
