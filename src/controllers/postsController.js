@@ -87,8 +87,6 @@ export async function getTimeline(req, res) {
 
             foundPosts[i].likes_users = [];
 
-            console.log(foundLikeUsers)
-
             if(foundLikeUsers?.length > 0){  
                 foundPosts[i].likes_users = foundLikeUsers.map(i => i.username);
             } 
