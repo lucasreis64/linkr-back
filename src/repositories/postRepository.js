@@ -7,6 +7,12 @@ async function deletePost(id) {
     );
 }
 
+async function getPost(id) {
+	return connection.query(
+        `SELECT * FROM posts WHERE id = $1`,[id]
+    );
+}
+
 async function updatePost(link, description, id) {
 	return connection.query(
         `UPDATE posts SET link = $1, description = $2 WHERE id = $3`,
@@ -34,6 +40,7 @@ async function getPostsTimeline(link, description, id) {
 const postRepository = {
 	deletePost,
     updatePost,
-    getPostsTimeline
+    getPostsTimeline,
+    getPost
 }
 export default postRepository;
