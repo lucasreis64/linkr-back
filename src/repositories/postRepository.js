@@ -31,9 +31,9 @@ async function getPostsTimeline(requesterId, offset) {
         JOIN follows f
         ON f.follower_id=$1 AND f.followed_id=p.user_id
         GROUP BY u.id, u.username, p.id, u.profile_picture
+        ORDER BY p.created_at DESC
         LIMIT 10
-        OFFSET $2
-        ORDER BY p.created_at DESC`, [requesterId, offset]);
+        OFFSET $2`, [requesterId, offset]);
 }
 
 const postRepository = {
