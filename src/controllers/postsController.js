@@ -46,13 +46,13 @@ export async function getTimeline(req, res) {
     try {
         const { rows: foundPosts } = await postRepository.getPostsTimeline(user.id);
         if (foundPosts?.length === 0) {
-            return res.sendStatus(200);
+            return res.send({'data': []});
         }
 
         for(let i = 0; i < foundPosts?.length; i++){
 
             const { rows: foundLikes } = await likesRepository.getLikesNumberPost(foundPosts[i].id);
-            
+           
             const {likes_count} = foundLikes[0];
 
             if(foundLikes?.length > 0){
