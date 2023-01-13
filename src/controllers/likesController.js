@@ -14,7 +14,6 @@ export async function postLike(req, res){
             if(userAlreadyLiked){
                 return res.sendStatus(202); 
             }
-
         }
 
         await likesRepository.createLike(post_id, user.id);
@@ -33,7 +32,6 @@ export async function removeLike(req, res) {
     try {
         const likeExist = await likesRepository.getLikesByPost(post_id);
 
-
         if(likeExist?.rowCount > 0) {
 
             const [{id}] = [...likeExist.rows].filter(i => i.user_id == user.id);
@@ -41,7 +39,6 @@ export async function removeLike(req, res) {
             if(!!id){
                 await likesRepository.deleteLike(id);
             }
-
         }
 
         res.sendStatus(202);

@@ -44,16 +44,15 @@ export async function publishPost(req, res){
 export async function getTimeline(req, res) {
     const user = res.locals.user;
     try {
-        const { rows: foundPosts } = await postRepository.getPostsTimeline();
-
+        const { rows: foundPosts } = await postRepository.getPostsTimeline(user.id);
         if (foundPosts?.length === 0) {
-            return res.sendStatus(200);
+            return res.send({'data': []});
         }
 
         for(let i = 0; i < foundPosts?.length; i++){
 
             const { rows: foundLikes } = await likesRepository.getLikesNumberPost(foundPosts[i].id);
-            
+           
             const {likes_count} = foundLikes[0];
 
             if(foundLikes?.length > 0){
@@ -72,8 +71,8 @@ export async function getTimeline(req, res) {
             }
             catch(e){
                 console.log(e)
+                title: "shared link in linkr",
                 foundPosts[i].link_metadata = {
-                    title: "shared link in linkr",
                     image : "https://rafaturis.com.br/wp-content/uploads/2014/01/default-placeholder.png",
                     url: foundPosts[i].link,
                     description: "check this nice link shared in linkr!",
