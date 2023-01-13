@@ -32,7 +32,7 @@ async function getPostsTimeline(requesterId, offset) {
         ON f.follower_id=$1 AND f.followed_id=p.user_id
         GROUP BY u.id, u.username, p.id, u.profile_picture
         LIMIT 10
-        OFFSET $2;
+        OFFSET $2
         ORDER BY p.created_at DESC`, [requesterId, offset]);
 }
 
