@@ -43,8 +43,10 @@ export async function publishPost(req, res){
 
 export async function getTimeline(req, res) {
     const user = res.locals.user;
+    const offset = req.query["offset"];
+    console.log(offset)
     try {
-        const { rows: foundPosts } = await postRepository.getPostsTimeline(user.id);
+        const { rows: foundPosts } = await postRepository.getPostsTimeline(user.id, offset);
         if (foundPosts?.length === 0) {
             return res.send({'data': []});
         }
