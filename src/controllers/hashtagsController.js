@@ -29,7 +29,7 @@ export async function getByHashtag(req, res){
         ORDER BY created_at DESC LIMIT 20
         `,
         [hashtag]);
-
+        
         if (foundPosts?.length === 0) {
             return "Não há posts ainda."
         }
