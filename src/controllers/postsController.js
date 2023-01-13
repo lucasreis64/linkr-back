@@ -44,20 +44,7 @@ export async function publishPost(req, res){
 export async function getTimeline(req, res) {
     const user = res.locals.user;
     try {
-        const { rows: foundPosts } = await connection.query(`
-           SELECT 
-                p.id,
-                p.link,
-                p.description,
-                p.created_at,
-                p.user_id,
-                u.username,
-                u.profile_picture
-            FROM posts p
-                JOIN users u
-                    ON p.user_id = u.id
-            ORDER BY created_at DESC LIMIT 10`);
-
+        const { rows: foundPosts } = await postRepository.getPostsTimeline(user.id);
         if (foundPosts?.length === 0) {
             return res.sendStatus(200);
         }
@@ -84,8 +71,8 @@ export async function getTimeline(req, res) {
             }
             catch(e){
                 console.log(e)
+                title: "shared link in linkr",
                 foundPosts[i].link_metadata = {
-                    title: "shared link in linkr",
                     image : "https://rafaturis.com.br/wp-content/uploads/2014/01/default-placeholder.png",
                     url: foundPosts[i].link,
                     description: "check this nice link shared in linkr!",

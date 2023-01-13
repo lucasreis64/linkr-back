@@ -24,6 +24,9 @@ export async function signIn(req, res) {
     const { password, id } = res.locals.user;
     const user = req.body
     const token = uuidV4();
+
+    const userData = res.locals.user;
+    delete userData.password;
     
     try {
         if (user && bcrypt.compareSync(user.password, password)) {
@@ -31,7 +34,7 @@ export async function signIn(req, res) {
                 "INSERT INTO sessions (user_id, token) VALUES ($1, $2)",
                 [id, token]
             );
-            res.send({ token });
+            res.send({ token, userData });
         } else {
             res.status(401).send("incorrect email or password");
         }

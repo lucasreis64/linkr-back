@@ -20,20 +20,16 @@ async function updatePost(link, description, id) {
     );
 }
 
-async function getPostsTimeline(link, description, id) {
-	return connection.query(
-        `SELECT 
-        p.id,
-        p.link,
-        p.description,
-        p.created_at,
-        p.user_id,
-        u.username,
-        u.profile_picture
-            FROM posts p
-                JOIN users u
-                    ON p.user_id = u.id
-            ORDER BY created_at DESC LIMIT 20`);
+async function getPostsTimeline(requesterId) {
+	return await connection.query(
+        `SELECT p.*, u.username, u.profile_picture,
+        COUNT(f.followed_id) AS is_followed
+        FROM posts p
+        JOIN users u
+        ON p.user_id=u.id
+        JOIN follows f
+        ON f.follower_id=$1 AND f.followed_id=p.user_id
+        GROUP BY u.id, u.username, p.id, u.profile_picture`, [requesterId]);
 }
 
 
