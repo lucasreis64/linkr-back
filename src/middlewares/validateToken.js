@@ -24,7 +24,11 @@ export default async function validateToken(req, res, next) {
         }
         
         let user = await connection.query(
-            "SELECT * FROM users WHERE id = $1;",
+            `SELECT u.*, COUNT(f.follower_id) AS following_amount
+            FROM users u LEFT JOIN follows f
+            ON f.follower_id=$1
+            WHERE u.id = $1
+            GROUP BY u.id`,
             [session.user_id]
         )
 
