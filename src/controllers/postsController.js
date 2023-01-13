@@ -43,8 +43,10 @@ export async function publishPost(req, res){
 
 export async function getTimeline(req, res) {
     const user = res.locals.user;
+    const offset = req.query["offset"];
+    console.log(offset)
     try {
-        const { rows: foundPosts1 } = await postRepository.getPostsTimeline(user.id);
+        const { rows: foundPosts1 } = await postRepository.getPostsTimeline(user.id, offset);
         const { rows: shares } = await postRepository.getPostsShared(user.id);
         const foundPosts = foundPosts1.concat(shares);
         foundPosts.sort((a, b) => a.created_at < b.created_at ? -1 : 1);
