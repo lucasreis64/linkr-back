@@ -47,7 +47,7 @@ export async function getTimeline(req, res) {
     console.log(offset)
     try {
         const { rows: foundPosts1 } = await postRepository.getPostsTimeline(user.id, offset);
-        const { rows: shares } = await postRepository.getPostsShared(user.id);
+        const { rows: shares } = await postRepository.getPostsShared(user.id, offset);
         const foundPosts = foundPosts1.concat(shares);
         foundPosts.sort((a, b) => a.created_at < b.created_at ? -1 : 1);
         if (foundPosts?.length === 0) {
