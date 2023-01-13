@@ -3,7 +3,9 @@ import connection from "../db/database.js";
 export async function rankTrendings(req, res){
     try {
         const rank = await connection.query(`
-            SELECT * FROM "hashtags" ORDER BY users DESC LIMIT 10;`);
+            SELECT * FROM "hashtags" 
+            ORDER BY users DESC 
+            LIMIT 10;`);
 
         return res.status(200).send(rank.rows);
     } catch (err){
@@ -20,7 +22,8 @@ export async function getByHashtag(req, res){
             SELECT * FROM posts AS p 
             JOIN posts_hashtags AS ph 
             ON ph.post_id = p.id 
-            WHERE ph.hashtag = $1`,
+            WHERE ph.hashtag = $1
+            LIMIT 10`,
             [hashtag]);
 
         return res.status(200).send(result.rows);

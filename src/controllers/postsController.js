@@ -55,7 +55,7 @@ export async function getTimeline(req, res) {
             FROM posts p
                 JOIN users u
                     ON p.user_id = u.id
-            ORDER BY created_at DESC LIMIT 20`);
+            ORDER BY created_at DESC LIMIT 10`);
 
         if (foundPosts?.length === 0) {
             return "Não há posts ainda."

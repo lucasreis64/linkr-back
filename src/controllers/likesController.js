@@ -16,12 +16,10 @@ export async function postLike(req, res){
 
             const userAlreadyLiked = [...likeExist.rows].some(i => i.user_id == user.id);
 
-
             console.log(userAlreadyLiked + " na lista de que já gostou")
             if(userAlreadyLiked){
                 return res.sendStatus(202); 
             }
-
         }
 
         await connection.query(`
@@ -48,7 +46,6 @@ export async function removeLike(req, res) {
         
         console.log(likeExist);
 
-
         if(likeExist?.rowCount > 0) {
 
             console.log(likeExist.rows);
@@ -60,7 +57,6 @@ export async function removeLike(req, res) {
                     DELETE FROM likes WHERE id = $1`,[id]
                 );
             }
-
         }
 
         res.sendStatus(202);
