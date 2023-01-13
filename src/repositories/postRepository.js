@@ -33,10 +33,27 @@ async function getPostsTimeline(requesterId) {
         ORDER BY p.created_at DESC`, [requesterId]);
 }
 
+async function getPostsShared(requesterId) {
+	return await connection.query(
+        `SELECT p.*, u2.username as "repostBy", u.username, u.profile_picture 
+		FROM posts p 
+		JOIN users u
+        ON p.user_id = u.id
+		JOIN shares s 
+		ON s.post_id = p.id
+		JOIN users u2
+		ON s.user_id = u2.id
+		JOIN follows f 
+		ON f.followed_id = s.user_id
+		WHERE f.follower_id = $1
+		ORDER BY p.created_at DESC`, [requesterId]);
+}
+
 const postRepository = {
 	deletePost,
     updatePost,
     getPostsTimeline,
-    getPost
+    getPost,
+    getPostsShared
 }
 export default postRepository;
