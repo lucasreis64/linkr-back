@@ -1,8 +1,22 @@
 import sharesRepository from "../repositories/sharesRepository.js";
 import postRepository from "../repositories/postRepository.js";
 
+export async function getShare(req, res){
+    const post_id = req.params.post_id;
+
+    try {
+        const shares = await sharesRepository.getSharesUsersPost(post_id);
+
+        return res.status(201).send(shares.rows);
+
+    } catch (err) {
+        console.log(err);
+        return res.sendStatus(500);
+    }
+}
+
 export async function postShare(req, res){
-    const {post_id} = req.body;
+    const post_id = req.params.post_id;
     const user = res.locals.user;
 
     try {
@@ -33,7 +47,7 @@ export async function postShare(req, res){
 }
 
 export async function removeShare(req, res) {
-    const {post_id} = req.body;
+    const post_id = req.params.post_id;
     const user = res.locals.user;
 
     try {
@@ -44,13 +58,10 @@ export async function removeShare(req, res) {
             return res.sendStatus(404);
         }
 
-        if(shareExist?.rowCount > 0) {
+        if(shareExist?.rowCount > 0) 
+        {  
 
-            const [{id}] = [...shareExist.rows].filter(i => i.user_id == user.id);
-
-            if(!!id){
-                await sharesRepository.deleteShare(id);
-            }
+            await sharesRepository.deleteShare(user.id, post_id);
 
         }
         else

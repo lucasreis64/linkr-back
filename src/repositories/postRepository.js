@@ -31,15 +31,34 @@ async function getPostsTimeline(requesterId, offset) {
         JOIN follows f
         ON f.follower_id=$1 AND f.followed_id=p.user_id
         GROUP BY u.id, u.username, p.id, u.profile_picture
+        ORDER BY p.created_at DESC
         LIMIT 10
-        OFFSET $2
-        ORDER BY p.created_at DESC`, [requesterId, offset]);
+        OFFSET $2`, [requesterId, offset]);
+}
+
+async function getPostsShared(requesterId, offset) {
+	return await connection.query(
+        `SELECT p.*, u2.username as "repostBy", u.username, u.profile_picture 
+		FROM posts p 
+		JOIN users u
+        ON p.user_id = u.id
+		JOIN shares s 
+		ON s.post_id = p.id
+		JOIN users u2
+		ON s.user_id = u2.id
+		JOIN follows f 
+		ON f.followed_id = s.user_id
+		WHERE f.follower_id = $1
+		ORDER BY p.created_at DESC
+        LIMIT 10
+        OFFSET $2`, [requesterId, offset]);
 }
 
 const postRepository = {
 	deletePost,
     updatePost,
     getPostsTimeline,
-    getPost
+    getPost,
+    getPostsShared
 }
 export default postRepository;

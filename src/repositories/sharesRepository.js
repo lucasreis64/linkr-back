@@ -1,8 +1,8 @@
 import connection from "../db/database.js";
 
-async function deleteShare(id) {
+async function deleteShare(user_id, post_id) {
 	return connection.query(
-        `DELETE FROM shares WHERE id = $1`,[id]
+        `DELETE FROM shares WHERE post_id = $1 AND user_id = $2`,[post_id, user_id]
     );
 }
 
