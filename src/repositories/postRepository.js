@@ -29,9 +29,9 @@ async function getPostsTimeline(requesterId) {
         ON p.user_id=u.id
         JOIN follows f
         ON f.follower_id=$1 AND f.followed_id=p.user_id
-        GROUP BY u.id, u.username, p.id, u.profile_picture`, [requesterId]);
+        GROUP BY u.id, u.username, p.id, u.profile_picture
+        ORDER BY p.created_at DESC`, [requesterId]);
 }
-
 
 const postRepository = {
 	deletePost,
