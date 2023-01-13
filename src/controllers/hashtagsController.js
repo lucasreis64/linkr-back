@@ -19,6 +19,13 @@ export async function getByHashtag(req, res){
     const hashtag = req.params.hashtag
     const user = res.locals.user;
     try {
+        const result = await connection.query(`
+            SELECT * FROM posts AS p 
+            JOIN posts_hashtags AS ph 
+            ON ph.post_id = p.id 
+            WHERE ph.hashtag = $1
+            LIMIT 10`,
+            [hashtag]);
 
         const { rows: foundPosts } = await connection.query(`
         SELECT p.*, u.username, u.profile_picture 

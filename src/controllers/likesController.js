@@ -11,6 +11,7 @@ export async function postLike(req, res){
 
             const userAlreadyLiked = [...likeExist.rows].some(i => i.user_id == user.id);
 
+            console.log(userAlreadyLiked + " na lista de que já gostou")
             if(userAlreadyLiked){
                 return res.sendStatus(202); 
             }

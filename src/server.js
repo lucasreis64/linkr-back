@@ -7,6 +7,8 @@ import usersRouter from "./routers/usersRouter.js";
 import hashtagsRouter from './routers/hashtagsRouter.js';
 import likesRouter from './routers/likesRouter.js';
 import sharesRouter from './routers/sharesRouter.js';
+import commentsRouter from './routers/commentsRouter.js';
+
 
 dotenv.config();
 
@@ -20,6 +22,7 @@ app.use(usersRouter)
 app.use(hashtagsRouter);
 app.use(likesRouter);
 app.use(sharesRouter);
+app.use(commentsRouter);
 
 app.listen(process.env.PORT || 5000, ()=>{
     console.log("Running on port " + process.env.PORT)
