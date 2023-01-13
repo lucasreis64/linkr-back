@@ -7,6 +7,7 @@ import usersRouter from "./routers/usersRouter.js";
 import hashtagsRouter from './routers/hashtagsRouter.js';
 import likesRouter from './routers/likesRouter.js';
 import sharesRouter from './routers/sharesRouter.js';
+import commentsRouter from './routers/commentsRouter.js';
 
 dotenv.config();
 
